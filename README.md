@@ -1,4 +1,4 @@
-# dempsey2018_agu
+# dempsey_agu2018
 Python library and Jupyter Notebook implementing induced seismicity models presented at 2018 AGU Fall Meeting
 
 ## Installation
