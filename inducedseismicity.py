@@ -49,7 +49,7 @@ class InducedSeismicity(object):
 		self.d = dim
 		self.pc = pcrit
 		
-		if self.d != 2.5:
+		if self.d != 2.5 and self.d != 1.5:
 			# for point source, compute bifurcation point 
 			self.tstar, self.rstar = self.apex()
 			self.pstar = self.prt(self.tstar, self.rstar)
@@ -92,6 +92,8 @@ class InducedSeismicity(object):
 		# pass to dimension specific method
 		if self.d == 1: 
 			_prt = self._prt1
+		elif self.d == 1.5: 
+			_prt = self._prt1i
 		elif self.d == 2: 
 			_prt = self._prt2
 		elif self.d == 2.5: 
@@ -135,6 +137,28 @@ class InducedSeismicity(object):
 
 		# subtract reference pressure
 		return pi - p0
+	def _prt1i(self,t,r,p0):					#   - 1D arbitrary simulation output
+		''' Fluid pressure in 1 dimension for arbitrary simulation output.
+			
+			Parameters
+			----------
+			t : array-like
+				Time.
+			r : float
+				Distance from injection source.
+			p0 : float, optional
+				Reference pressure for root solve.
+				
+			Returns
+			-------
+			p : array-like
+				Pressure.
+				
+			Notes
+			-----
+			Interpolates solution from simulator output.
+		'''
+		return self.pint(r,t)
 	def _prt2(self,t,r,p0):						#   - 2D point source (Theis)
 		''' Fluid pressure in 2 dimensions.
 			
@@ -172,8 +196,8 @@ class InducedSeismicity(object):
 
 		# subtract reference pressure
 		return pi - p0
-	def _prt2i(self,t,r,p0):					#   - 2D distributed source (interpolation)
-		''' Fluid pressure in 2 dimensions for distributed injection source.
+	def _prt2i(self,t,r,p0):					#   - 2D arbitrary simulation output
+		''' Fluid pressure in 2 dimensions for arbitrary simulation output.
 			
 			Parameters
 			----------
@@ -191,7 +215,7 @@ class InducedSeismicity(object):
 				
 			Notes
 			-----
-			Interpolates solution from reservoir simulator output.
+			Interpolates solution from simulator output.
 		'''
 		return self.pint(r,t)
 	def _prt3(self,t,r,p0):						#   - 3D point source
@@ -250,6 +274,8 @@ class InducedSeismicity(object):
 		# pass to dimension specific method
 		if self.d == 1: 
 			_dpdt = self._dpdt1
+		elif self.d == 1.5: 
+			_dpdt = self._dpdt1i
 		elif self.d == 2: 
 			_dpdt = self._dpdt2
 		elif self.d == 2.5: 
@@ -293,6 +319,28 @@ class InducedSeismicity(object):
 		
 		# subtract reference gradient
 		return dpdti - dpdt0
+	def _dpdt1i(self,t,r,dpdt0):				#   - 1D arbitrary simulation output
+		''' Fluid pressure partial derivative with time in 1 dimensions for arbitrary simulation output.
+			
+			Parameters
+			----------
+			t : array-like
+				Time.
+			r : float
+				Distance from injection source.
+			dpdt0 : float, optional
+				Reference pressure gradient for root solve.
+				
+			Returns
+			-------
+			dpdt : array-like
+				Pressure partial derivative with time.
+				
+			Notes
+			-----
+			Interpolates solution from simulator output.
+		'''
+		return self.dpint(r,t)
 	def _dpdt2(self,t,r,dpdt0):					#   - 2D point source (Theis)
 		''' Fluid pressure partial derivative with time in 2 dimensions.
 			
@@ -328,8 +376,8 @@ class InducedSeismicity(object):
 		
 		# subtract reference gradient
 		return dpdti - dpdt0
-	def _dpdt2i(self,t,r,dpdt0):				#   - 2D distributed source (interpolation)
-		''' Fluid pressure partial derivative with time in 2 dimensions for distributed injection source.
+	def _dpdt2i(self,t,r,dpdt0):				#   - 2D arbitrary simulation output
+		''' Fluid pressure partial derivative with time in 2 dimensions for arbitrary simulation output.
 			
 			Parameters
 			----------
@@ -347,7 +395,7 @@ class InducedSeismicity(object):
 				
 			Notes
 			-----
-			Interpolates solution from reservoir simulator output.
+			Interpolates solution from simulator output.
 		'''
 		return self.dpint(r,t)
 	def _dpdt3(self,t,r,dpdt0):					#   - 3D point source
@@ -452,6 +500,8 @@ class InducedSeismicity(object):
 		# pass to dimension specific method
 		if self.d == 1:
 			_dpdr=self._dpdr1
+		elif self.d == 1.5: 
+			_dpdr = self._dpdr1i
 		elif self.d == 2:
 			_dpdr=self._dpdr2
 		elif self.d == 2.5: 
@@ -495,6 +545,28 @@ class InducedSeismicity(object):
 		
 		# subtract reference gradient
 		return dpdri - dpdr0
+	def _dpdr1i(self,t,r,dpdr0=0):				#	- 2D arbitrary simulation output
+		''' Fluid pressure partial derivative with distance in 2 dimensions for arbitrary simulation output.
+			
+			Parameters
+			----------
+			t : array-like
+				Time.
+			r : float
+				Distance from injection source.
+			dpdr0 : float, optional
+				Reference pressure gradient for root solve.
+				
+			Returns
+			-------
+			dpdr : array-like
+				Pressure partial derivative with distance.
+				
+			Notes
+			-----
+			Interpolates solution from simulator output.
+		'''
+		return self.dpdrint(r,t)
 	def _dpdr2(self,r,t,dpdr0=0):				# 	- 2D point source (Theis)
 		''' Fluid pressure partial derivative with distance in 2 dimensions.
 			
@@ -530,7 +602,7 @@ class InducedSeismicity(object):
 		
 		# subtract reference gradient
 		return dpdri - dpdr0
-	def _dpdr2i(self,t,r,dpdr0=0):				#	- 2D distributed source (interpolation)
+	def _dpdr2i(self,t,r,dpdr0=0):				#	- 2D arbitrary simulation output
 		''' Fluid pressure partial derivative with distance in 2 dimensions for distributed injection source.
 			
 			Parameters
@@ -949,6 +1021,8 @@ class InducedSeismicity(object):
 		# pass to dimension specific method
 		if self.d == 1:
 			_nt=self._nt1
+		elif self.d == 1.5:
+			_nt=self._nt1i
 		elif self.d == 2:
 			_nt=self._nt2
 		elif self.d == 2.5:
@@ -1026,6 +1100,69 @@ class InducedSeismicity(object):
 		n[inds3] = 0.
 		
 		return np.array(n)
+	def _nt1i(self,t,rmax):						#   - 1D arbitrary simulation output
+		''' Compute global seismicity rate.
+		
+			Parameters
+			----------
+			t : array-like
+				Time.
+			rmax : float, optional
+				Maximum distance to integrate seismicity.
+			
+			Returns
+			-------
+			n : array-like
+				Seismicity rate.
+		'''
+		# set up solution grid
+		#rs = np.logspace(-2, np.log10(self.r[-1]), 201)
+		rs = np.linspace(self.r[0], self.r[-1], 201)
+		rm = 0.5*(rs[:-1] + rs[1:])
+		dr = -0.5*(rs[:-1] - rs[1:])
+		tt,rr = np.meshgrid(t,rm)
+		dr = np.tile(dr,reps=(len(t),1)).T
+		if rmax is not None:
+			if rmax>0.:
+				rr[rr>rmax]=0.
+			elif rmax<0.:
+				rr[rr<abs(rmax)]=0.
+		
+		# compute pressure and gradients
+		p = 0.*tt
+		dp = 0.*tt
+		dpdr = 0.*tt
+		for i in range(tt.shape[0]):
+			p[i,:] = self.prt(t, rm[i]).T[0]
+			dp[i,:] = self.dpdt(t, rm[i]).T[0]
+			dpdr[i,:] = self.dpdr(t, rm[i]).T[0]
+		
+		mask = 1.+0.*dp
+		
+		# interpolation scheme
+		for i in range(mask.shape[0]):
+			pmax1 = self.pc*1.
+			pmax2 = self.pc*1.
+			for j in range(mask.shape[1]):
+				dpdri = dpdr[i,j]
+				pedge1 = p[i,j]-dpdri*dr[i,j]/2.
+				pedge2 = p[i,j]+dpdri*dr[i,j]/2.
+					
+				if pedge2<pmax2 and pedge1<pmax1:
+					mask[i,j] = 0.
+				elif pedge2>pmax2 and pedge1<pmax1:
+					mask[i,j] = 1.-(pmax1-pedge1)/(pedge2-pedge1-(pmax2-pmax1))
+					pmax2 = pedge2
+				elif pedge2<pmax2 and pedge1>pmax1:
+					mask[i,j] = (pmax1-pedge1)/(pedge2-pedge1-(pmax2-pmax1))
+					pmax1 = pedge1
+				else:
+					pmax2 = pedge2
+					pmax1 = pedge1
+					
+		n = np.sum(dp*mask*dr, axis=0)
+			
+		return n
 	def _nt2(self,t,rmax):						#   - 2D point source (Theis)
 		''' Compute global seismicity rate.
 		
@@ -1091,7 +1228,7 @@ class InducedSeismicity(object):
 		n = n/n0
 			
 		return np.array(n)
-	def _nt2i(self,t,rmax):						#   - 2D distributed source (interpolation)
+	def _nt2i(self,t,rmax):						#   - 2D arbitrary simulation output
 		''' Compute global seismicity rate.
 		
 			Parameters
