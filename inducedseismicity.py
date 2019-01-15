@@ -545,7 +545,7 @@ class InducedSeismicity(object):
 		
 		# subtract reference gradient
 		return dpdri - dpdr0
-	def _dpdr1i(self,t,r,dpdr0=0):				#	- 2D arbitrary simulation output
+	def _dpdr1i(self,t,r,dpdr0=0):				#	- 1D arbitrary simulation output
 		''' Fluid pressure partial derivative with distance in 2 dimensions for arbitrary simulation output.
 			
 			Parameters
@@ -1116,7 +1116,6 @@ class InducedSeismicity(object):
 				Seismicity rate.
 		'''
 		# set up solution grid
-		#rs = np.logspace(-2, np.log10(self.r[-1]), 201)
 		rs = np.linspace(self.r[0], self.r[-1], 201)
 		rm = 0.5*(rs[:-1] + rs[1:])
 		dr = -0.5*(rs[:-1] - rs[1:])
